@@ -1,0 +1,17 @@
+# IntelliJ IDEA
+.idea
+.idea/
+.idea/*
+.idea/php.xml
+
+#  Temp files
+__html
+
+# ENVIRONMENT
+.env
+
+# OTHER
+www/node_modules
+
+# composer.lock
+src/composer.lock

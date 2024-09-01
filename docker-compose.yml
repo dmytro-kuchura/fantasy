@@ -1,0 +1,57 @@
+name: "fantasy"
+
+services:
+  nginx:
+    container_name: fantasy_nginx
+    build:
+      context: .docker/nginx
+    volumes:
+      - ./.docker/nginx:/etc/nginx/conf.d/
+      - ./src/:/var/www/html
+    ports:
+      - "80:80"
+    depends_on:
+      - php
+
+  database:
+    container_name: fantasy_database
+    build:
+      context: .docker/postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - local-database:/var/lib/postgresql/data
+
+  php:
+    container_name: fantasy_php
+    build:
+      args:
+        user: podcast
+        uid: 1000
+      context: .docker/php
+    volumes:
+      - ./.docker/php/php.ini:/usr/local/etc/php/conf.d/php.ini
+      - ./src/:/var/www/html
+
+  redis:
+    container_name: fantasy_redis
+    build:
+      context: .docker/redis
+    command: >
+      --requirepass ${REDIS_PASSWORD}
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - local-redis:/data
+
+volumes:
+  local-database:
+    driver: local
+  local-redis:
+    driver: local
